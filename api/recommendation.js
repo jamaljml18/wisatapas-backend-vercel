@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   const { user_id, favorite_place } = req.body;
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/recommendations", {
+    const response = await fetch("https://mjamalm18-fastapi-wisatapas.hf.space/recommendations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_id, favorite_place }),
