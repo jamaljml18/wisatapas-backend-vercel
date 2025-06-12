@@ -6,27 +6,32 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  // Izinkan origin (ganti sesuai kebutuhan)
+  // CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    // Handle preflight request
-    return res.status(200).end();
+    return res.status(200).end(); 
   }
 
   if (req.method !== "DELETE") {
-  return res.status(405).json({ message: "Method not allowed" });
+    return res.status(405).json({ message: "Method not allowed" });
+  }
 
-  const { id_user, nama_user, id_tempat, nama_tempat } = req.body;
+  try {
+    const { id_user, nama_user, id_tempat, nama_tempat } = req.body;
 
-  const { error } = await supabase
-    .from("likes")
-    .delete()
-    .match({ id_user, nama_user, id_tempat, nama_tempat });
+    const { error } = await supabase
+      .from("likes")
+      .delete()
+      .match({ id_user, nama_user, id_tempat, nama_tempat });
 
-  if (error) return res.status(500).json({ message: "Server error" });
+    if (error) throw error;
 
-  return res.status(200).json({ message: "Tempat favorit berhasil dihapus" });
+    return res.status(200).json({ message: "Tempat favorit berhasil dihapus" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
 }
